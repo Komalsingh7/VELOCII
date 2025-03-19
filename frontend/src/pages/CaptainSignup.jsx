@@ -1,9 +1,12 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-
+import { CaptainDataContext } from '../context/CaptainContext'
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 const CaptainSignup = () => {
 
+  const navigate = useNavigate()
 
   const [ email, setEmail ] = useState('')
   const [ password, setPassword ] = useState('')
@@ -15,6 +18,8 @@ const CaptainSignup = () => {
   const [ vehicleCapacity, setVehicleCapacity ] = useState('')
   const [ vehicleType, setVehicleType ] = useState('')
 
+
+  const { captain, setCaptain } = React.useContext(CaptainDataContext)
 
 
   const submitHandler = async (e) => {
@@ -34,7 +39,14 @@ const CaptainSignup = () => {
       }
     }
 
-    
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/register`, captainData)
+
+    if (response.status === 201) {
+      const data = response.data
+      setCaptain(data.captain)
+      localStorage.setItem('token', data.token)
+      navigate('/captain-home')
+    }
 
     setEmail('')
     setFirstName('')
@@ -49,13 +61,13 @@ const CaptainSignup = () => {
   return (
     <div className='py-5 px-5 h-screen flex flex-col justify-between'>
       <div>
-      <img className="absolute top-4 left-4 w-16 z-50 " src="LOGO.png" alt="Logo" />
+      <img className="absolute top-2 left-4 w-16 z-50 " src="LOGO.png" alt="Logo" />
 
         <form onSubmit={(e) => {
           submitHandler(e)
         }}>
 
-          <h3 className='text-lg w-full mt-9 font-medium mb-2'>What's our Captain's name</h3>
+          <h3 className='text-lg w-full mt-2 font-medium mb-2'>What's our Captain's name</h3>
           <div className='flex gap-4 mb-7'>
             <input
               required
